@@ -36248,6 +36248,22 @@
     "dateAdded": "2026-05-16"
   },
   {
+    "slug": "bbk",
+    "title": "Bank of Bahrain and Kuwait",
+    "aliases": [],
+    "hex": "FFD200",
+    "categories": [
+      "Finance"
+    ],
+    "variants": {
+      "default": "/icons/bbk/default.svg"
+    },
+    "license": "CC0-1.0",
+    "url": "https://www.bbkonline.com/",
+    "dateAdded": "2026-05-27",
+    "collection": "brands"
+  },
+  {
     "slug": "bbva",
     "title": "BBVA",
     "aliases": [],
