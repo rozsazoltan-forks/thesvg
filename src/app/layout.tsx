@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { MobileShell } from "@/components/mobile/mobile-shell";
 import { getFormattedIconCount } from "@/lib/icons";
 import "./globals.css";
 
@@ -67,9 +68,13 @@ export const metadata: Metadata = {
     description: `Search, copy, and ship ${count}+ brand SVG icons. Open-source library with npm, React, Vue, Svelte, CLI, CDN, and MCP server support.`,
     images: ["/og-image.png"],
   },
-  manifest: "/manifest.json",
   icons: {
-    icon: "/icon.svg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-dark.svg", type: "image/svg+xml", media: "(prefers-color-scheme: dark)" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+    ],
     apple: "/apple-touch-icon.png",
   },
   category: "technology",
@@ -91,7 +96,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "theSVG",
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
   },
 };
 
@@ -138,11 +143,22 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ScrollToTop />
+          {/* Desktop header — `lg:` and above. Below that the MobileShell
+              renders its own top bar + bottom dock to deliver an app-like
+              feel without touching desktop chrome. */}
+          <div className="hidden lg:block">
+            <Suspense>
+              <Header />
+            </Suspense>
+          </div>
           <Suspense>
-            <Header />
+            <MobileShell>
+              <main className="min-h-[calc(100dvh-3rem)] lg:min-h-[calc(100dvh-3.75rem)]">
+                {children}
+              </main>
+              <Footer />
+            </MobileShell>
           </Suspense>
-          <main className="min-h-[calc(100dvh-var(--header-h))]">{children}</main>
-          <Footer />
         </ThemeProvider>
       </body>
     </html>

@@ -31,6 +31,8 @@ export interface IconEntry {
     type?: string;
     parent?: string;
   };
+  supersedes?: string;
+  supersededBy?: string;
 }
 
 const icons = iconsData as IconEntry[];

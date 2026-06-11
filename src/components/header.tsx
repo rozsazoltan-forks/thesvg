@@ -6,6 +6,7 @@ import posthog from "posthog-js";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, Cloud, FileText, Menu, Moon, Package, Plus, Search, Shapes, Sparkles, Sun, X } from "lucide-react";
 import { Github } from "@/components/icons/shared/brand-icons";
+import { TheSVGMark } from "@/components/icons/the-svg-mark";
 import { useTheme } from "next-themes";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -219,11 +220,11 @@ export function Header() {
 
   const hasRecents = recentViewedIcons.length > 0 || recentSearches.length > 0;
 
-  // Lazy-load the manifest and Fuse.js when the user types a search query
+  // Functional updates so empty-query renders bail on Object.is.
   useEffect(() => {
     if (!hasQuery) {
-      setSuggestions([]);
-      setSelectedIdx(-1);
+      setSuggestions((prev) => (prev.length === 0 ? prev : []));
+      setSelectedIdx((prev) => (prev === -1 ? prev : -1));
       return;
     }
     let active = true;
@@ -232,7 +233,7 @@ export function Header() {
       setSuggestions(searchIcons(icons, query).slice(0, 6));
       setSelectedIdx(-1);
     }).catch(() => {
-      if (active) setSuggestions([]);
+      if (active) setSuggestions((prev) => (prev.length === 0 ? prev : []));
     });
     return () => { active = false; };
   }, [query, hasQuery]);
@@ -313,7 +314,7 @@ export function Header() {
       className="sticky top-0 z-50 w-full px-2 pt-2 pb-0 sm:px-3 sm:pt-2.5"
       style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
     >
-      <div className="mx-auto max-w-[1800px] rounded-2xl border border-black/[0.06] bg-background/95 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.03)] backdrop-blur-2xl backdrop-saturate-150 supports-[backdrop-filter]:bg-background/75 sm:supports-[backdrop-filter]:bg-background/85 dark:border-white/[0.08] dark:bg-black/85 dark:supports-[backdrop-filter]:bg-black/55 sm:dark:supports-[backdrop-filter]:bg-black/60 dark:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.05)]">
+      <div className="mx-auto max-w-[1800px] rounded-2xl border border-black/[0.06] bg-background/90 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.03)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-black/60 dark:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.05)]">
         {/* On mobile (<sm) the row wraps and the search drops to a second
             row using `order-last`, so phones like Realme/iPhone SE get a
             true full-width input instead of being squeezed between Submit
@@ -332,14 +333,8 @@ export function Header() {
               <Menu className="h-5 w-5" />
             </Button>
 
-            <Link href="/" className="group/logo flex items-center gap-1.5" aria-label="theSVG home">
-              <img
-                src="/logo-transparent.svg"
-                alt="theSVG"
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-lg transition-transform duration-200 group-hover/logo:scale-105"
-              />
+            <Link href="/" className="group/logo flex items-center gap-1.5 text-foreground" aria-label="theSVG home">
+              <TheSVGMark className="h-9 w-9 rounded-lg transition-transform duration-200 group-hover/logo:scale-105" />
               <span className="hidden text-[15px] font-bold tracking-tight text-foreground sm:inline">
                 the<span className="text-orange-500">SVG</span>
               </span>
@@ -410,7 +405,7 @@ export function Header() {
             onSubmit={handleSearchSubmit}
             className="relative order-last w-full basis-full sm:order-none sm:w-auto sm:flex-1 sm:basis-auto"
           >
-            <div className="relative w-full sm:mx-auto sm:max-w-xl">
+            <div className="relative w-full sm:mx-auto sm:max-w-2xl">
               <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/60" />
               <input
                 ref={inputRef}
@@ -458,7 +453,7 @@ export function Header() {
               <div
                 ref={dropdownRef}
                 id={listboxId}
-                className="absolute top-full right-0 left-0 z-50 mt-1.5 overflow-hidden rounded-xl border border-border/40 bg-background shadow-[0_8px_30px_-4px_rgba(0,0,0,0.15)] backdrop-blur-2xl backdrop-saturate-150 sm:mx-auto sm:max-w-xl sm:bg-background/95 dark:border-white/[0.1] dark:bg-[#0a0a0a] dark:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.6)] sm:dark:bg-[rgba(10,10,10,0.95)]"
+                className="absolute top-full right-0 left-0 z-50 mt-1.5 min-w-[min(420px,calc(100vw-1.5rem))] overflow-hidden rounded-xl border border-border/60 bg-background shadow-[0_16px_48px_-12px_rgba(0,0,0,0.25),0_4px_12px_-4px_rgba(0,0,0,0.15)] sm:mx-auto sm:max-w-2xl dark:border-white/[0.12] dark:bg-[#0f0f10] dark:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.7),0_4px_12px_-4px_rgba(0,0,0,0.5)]"
                 role="listbox"
               >
                 {hasQuery ? (

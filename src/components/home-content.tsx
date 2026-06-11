@@ -17,6 +17,7 @@ import { useFavoritesStore } from "@/lib/stores/favorites-store";
 import { useSidebarStore } from "@/lib/stores/sidebar-store";
 import { useSearchStore } from "@/lib/stores/search-store";
 import { hasCategoryLanding, slugifyCategory } from "@/lib/categories";
+import { MobileRecentsRow } from "@/components/mobile/mobile-recents-row";
 
 const SORT_OPTIONS = ["default", "recent", "az", "za"] as const;
 
@@ -316,11 +317,16 @@ export function HomeContent({ categoryCounts, count, recentIcons, collections, d
         ) : (
           /* Filtered view */
           <>
-            {/* Sticky toolbar pinned to the bottom of the live header.
-                Header height is exposed as `--header-h` and switches at
-                sm so this offset stays correct on both mobile (two-row
-                + safe-area) and desktop (single row). */}
-            <div className="sticky top-[var(--header-h)] z-20 border-b border-border/30 bg-background backdrop-blur-2xl sm:bg-background/95">
+            {/* Mobile-only pinned recents row above the toolbar. Hides
+                automatically when there are no recents. */}
+            <div className="mx-auto max-w-7xl pt-2 lg:hidden">
+              <MobileRecentsRow />
+            </div>
+
+            {/* Sticky toolbar - count + controls. Header is taller on
+                mobile because the search occupies its own row, so the
+                sticky offset bumps up at <sm. */}
+            <div className="sticky top-12 z-20 border-b border-border/30 bg-background/95 backdrop-blur-xl lg:top-[3.75rem]">
               <div className="mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-1.5 sm:gap-2 sm:px-4">
                 {/* Count label */}
                 <p className="flex-1 text-sm text-muted-foreground">

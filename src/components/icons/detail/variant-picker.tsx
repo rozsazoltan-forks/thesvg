@@ -10,15 +10,15 @@ interface VariantPickerProps {
   slug: string;
 }
 
-/** Background for preview thumbnails: light variants get dark bg, dark get light bg */
+// Preview on the surface the variant is designed to live on.
 function getPreviewBg(variantKey: string): string {
   switch (variantKey) {
     case "light":
     case "wordmarkLight":
-      return "bg-zinc-800";
+      return "bg-zinc-100";
     case "dark":
     case "wordmarkDark":
-      return "bg-zinc-100";
+      return "bg-zinc-800";
     default:
       return "icon-preview-bg";
   }

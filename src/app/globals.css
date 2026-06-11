@@ -67,6 +67,15 @@
   --input: oklch(0.91 0 0);
   --ring: oklch(0.708 0 0);
   --radius: 0.75rem;
+  --surface-0: oklch(0.99 0 0);
+  --surface-1: oklch(0.97 0 0);
+  --surface-2: oklch(0.94 0 0);
+  --surface-3: oklch(0.91 0 0);
+  --surface-glass: rgb(255 255 255 / 0.95);
+  --surface-glass-blur: rgb(255 255 255 / 0.88);
+  --surface-glass-highlight: rgb(255 255 255 / 0.55);
+  --accent-brand: #f97316;
+  color-scheme: dark light;
 }
 
 .dark {
@@ -88,17 +97,13 @@
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
   --ring: oklch(0.5 0 0);
-  /* Header height token used by the sticky toolbar and main min-h.
-     On mobile the header is two rows (logo+actions + full-width search)
-     ~= 7.25rem; safe-area-inset-top extends it on notched devices
-     beyond the 0.5rem we already reserve, so subtract that. */
-  --header-h: calc(7.25rem + max(0px, env(safe-area-inset-top) - 0.5rem));
-}
-
-@media (min-width: 640px) {
-  :root {
-    --header-h: 3.75rem;
-  }
+  --surface-0: oklch(0.08 0 0);
+  --surface-1: oklch(0.13 0 0);
+  --surface-2: oklch(0.17 0 0);
+  --surface-3: oklch(0.22 0 0);
+  --surface-glass: rgb(12 12 12 / 0.95);
+  --surface-glass-blur: rgb(14 14 16 / 0.86);
+  --surface-glass-highlight: rgb(255 255 255 / 0.12);
 }
 
 @layer base {
@@ -107,23 +112,72 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* `clip` (not `hidden`) so the body remains the default scroll
-       container on iOS Safari and `position:fixed` descendants keep
-       viewport-relative placement on older iOS. */
+    /* `clip` keeps body as the iOS Safari scroll container so fixed
+       descendants (dock, sheets) keep viewport-relative placement. */
     overflow-x: clip;
+    overscroll-behavior-y: contain;
   }
   html {
     @apply font-sans;
     /* iOS double-tap zoom dampens text resize jumps. */
     -webkit-text-size-adjust: 100%;
   }
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+  [data-mobile-tile] {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
 }
 
-/* Scrollbar styling */
+:root {
+  --scrollbar-thumb: rgb(0 0 0 / 0.35);
+  --scrollbar-thumb-hover: rgb(0 0 0 / 0.65);
+}
+
+.dark {
+  --scrollbar-thumb: rgb(255 255 255 / 0.32);
+  --scrollbar-thumb-hover: rgb(255 255 255 / 0.6);
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 150ms ease-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
@@ -1168,4 +1222,111 @@
     transform: none;
     pointer-events: auto;
   }
+}
+
+:root {
+  --motion-spring: 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion-fade: 150ms ease-out;
+  --motion-slide: 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --dock-height: 64px;
+}
+
+/* Do not add `contain: paint` or `isolation: isolate` here — either
+   creates a backdrop root and kills the backdrop-filter. */
+.surface-glass {
+  background: var(--surface-glass);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .surface-glass {
+    background: var(--surface-glass-blur);
+    backdrop-filter: blur(48px) saturate(220%) brightness(1.12) contrast(1.05);
+    -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(1.12) contrast(1.05);
+    box-shadow: inset 0 1px 0 0 var(--surface-glass-highlight);
+  }
+}
+
+/* `var(--card)` ships as oklch; do not wrap in hsl(). */
+.surface-glass-solid {
+  background: var(--card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .surface-glass {
+    background: var(--card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@keyframes tap-bounce {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.tap-bounce.is-bounced {
+  animation: tap-bounce 120ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tap-bounce.is-bounced {
+    animation: none;
+  }
+}
+
+.mobile-shell-body {
+  padding-top: calc(3rem + var(--safe-top) + 24px);
+  padding-bottom: calc(var(--dock-height) + var(--safe-bottom) + 20px);
+}
+
+@media (display-mode: standalone) {
+  .mobile-shell-body {
+    padding-bottom: calc(var(--dock-height) + var(--safe-bottom));
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-shell-body {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.sheet-handle {
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: oklch(0.55 0 0 / 0.45);
+  margin: 8px auto 10px;
+  transition: background-color 150ms ease-out, width 150ms ease-out;
+}
+
+.sheet-handle:hover,
+.sheet-handle[data-dragging="true"] {
+  width: 56px;
+  background: oklch(0.45 0 0 / 0.7);
+}
+
+.dark .sheet-handle {
+  background: oklch(0.7 0 0 / 0.4);
+}
+
+.dark .sheet-handle:hover,
+.dark .sheet-handle[data-dragging="true"] {
+  background: oklch(0.85 0 0 / 0.55);
+}
+
+.sheet-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sheet-scroll-auto {
+  overscroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
 }
