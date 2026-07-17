@@ -78714,6 +78714,22 @@
     "collection": "brands"
   },
   {
+    "slug": "longbridge",
+    "title": "Longbridge",
+    "aliases": [],
+    "hex": "00DBB6",
+    "categories": [
+      "Finance"
+    ],
+    "variants": {
+      "default": "/icons/longbridge/default.svg"
+    },
+    "license": "Longbridge Brand Guidelines - non-commercial use only",
+    "url": "https://longbridge.com",
+    "dateAdded": "2026-07-17",
+    "collection": "brands"
+  },
+  {
     "slug": "longcat",
     "title": "LongCat",
     "aliases": [],
