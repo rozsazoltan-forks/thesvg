@@ -363,6 +363,7 @@ export function HomeHero({
   // Returning-visitor rail: resolve recently viewed slugs to icons. Only
   // renders when the user actually has history, so first-time visitors see
   // no change. Bounded to 8 to keep the rail compact above the fold.
+  // Reuses the `iconsBySlug` map declared above (already O(1) lookups).
   const recentViewed = useRecentsStore((s) => s.viewed);
   const clearViewed = useRecentsStore((s) => s.clearViewed);
   const recentViewedIcons = useMemo(() => {
